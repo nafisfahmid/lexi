@@ -15,7 +15,14 @@ jobs:
         run: |
           unzip -q LexiBangla-Android-Project-v1.3.0.zip -d project
           GRADLEW=$(find project -name gradlew | head -n 1)
-          echo "PROJECT_DIR=$(dirname "$GRADLEW")" >> $GITHUB_ENV
+          echo "PROJECT_DIR=$(dirname "$GRADLEW")" >> $GITHUB_ENV 
+          
+      - name: Show build files
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          echo "=== libs.versions.toml ==="; cat gradle/libs.versions.toml || true
+          echo "=== app/build.gradle.kts ==="; cat app/build.gradle.kts
+          echo "=== build.gradle.kts ==="; cat build.gradle.kts || true
 
       - uses: actions/setup-java@v4
         with:
