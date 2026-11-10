@@ -43,11 +43,28 @@ jobs:
           EOF
           tail -n 15 app/build.gradle.kts
           
+            - name: Create version pin script
+        run: |
+          cat > "$RUNNER_TEMP/pin.gradle" <<'EOF'
+          allprojects {
+              configurations.all {
+                  resolutionStrategy.eachDependency { d ->
+                      if (d.requested.group == 'androidx.core' && (d.requested.name == 'core' || d.requested.name == 'core-ktx')) {
+                          d.useVersion('1.16.0')
+                      }
+                      if (d.requested.group.startsWith('androidx.compose') && d.requested.version == '1.12.1') {
+                          d.useVersion('1.8.3')
+                      }
+                  }
+              }
+          }
+          EOF
+
       - name: Build debug APK
         working-directory: ${{ env.PROJECT_DIR }}
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug --no-daemon -I "$RUNNER_TEMP/pin.gradle"
 
       - uses: actions/upload-artifact@v4
         with:
