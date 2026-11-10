@@ -42,7 +42,8 @@ jobs:
               configurations.all {
                   resolutionStrategy.eachDependency { d ->
                       if (d.requested.group == 'androidx.core' && (d.requested.name == 'core' || d.requested.name == 'core-ktx')) {
-                          d.useVersion('1.16.0')
+                          d.useVersion('1.17.0')
+                      }
                       }
                       if (d.requested.group.startsWith('androidx.compose') && d.requested.version == '1.12.1') {
                           d.useVersion('1.8.3')
