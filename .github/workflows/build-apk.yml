@@ -21,7 +21,21 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+          
+      - name: Patch jvmTarget for newer Kotlin
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          sed -i '/kotlinOptions *{/,/}/d' app/build.gradle.kts
+          cat >> app/build.gradle.kts <<'EOF'
 
+          kotlin {
+              compilerOptions {
+                  jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+              }
+          }
+          EOF
+          tail -n 15 app/build.gradle.kts
+          
       - name: Build debug APK
         working-directory: ${{ env.PROJECT_DIR }}
         run: |
