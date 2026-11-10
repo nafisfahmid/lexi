@@ -5,6 +5,9 @@ on:
   push:
     branches: [main]
 
+env:
+  PROJECT_DIR: project/LexiBangla
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,23 +15,13 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Unzip project
-        run: |
-          unzip -q LexiBangla-Android-Project-v1.3.0.zip -d project
-          GRADLEW=$(find project -name gradlew | head -n 1)
-          echo "PROJECT_DIR=$(dirname "$GRADLEW")" >> $GITHUB_ENV 
-          
-      - name: Show build files
-        working-directory: ${{ env.PROJECT_DIR }}
-        run: |
-          echo "=== libs.versions.toml ==="; cat gradle/libs.versions.toml || true
-          echo "=== app/build.gradle.kts ==="; cat app/build.gradle.kts
-          echo "=== build.gradle.kts ==="; cat build.gradle.kts || true
+        run: unzip -q LexiBangla-Android-Project-v1.3.0.zip -d project
 
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
-          
+
       - name: Patch jvmTarget for newer Kotlin
         working-directory: ${{ env.PROJECT_DIR }}
         run: |
@@ -41,9 +34,8 @@ jobs:
               }
           }
           EOF
-          tail -n 15 app/build.gradle.kts
-          
-            - name: Create version pin script
+
+      - name: Create version pin script
         run: |
           cat > "$RUNNER_TEMP/pin.gradle" <<'EOF'
           allprojects {
